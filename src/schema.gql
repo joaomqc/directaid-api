@@ -1,0 +1,114 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type OrganizerPartial {
+  id: ID!
+  location: String!
+  description: String!
+}
+
+type Event {
+  id: ID!
+  title: String!
+  description: String!
+  date: DateTime!
+  location: String!
+  following: Boolean!
+  followers: Int!
+  organizer: OrganizerPartial!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  organizer: OrganizerPartial
+}
+
+type UserPartial {
+  id: ID!
+  name: String!
+}
+
+type Organizer {
+  id: ID!
+  location: String!
+  description: String!
+  user: UserPartial!
+}
+
+type Query {
+  event(id: Int!): Event!
+  events(skip: Int = 0, take: Int = 25, followingOnly: Boolean = false, searchTerm: String = null, sortBy: String = null, organizer: OrganizerArgs = null): [Event!]!
+  me: User!
+  organizer(id: Int!): Organizer!
+  organizers(skip: Int = 0, take: Int = 25, followingOnly: Boolean = false, searchTerm: String = null, sortBy: String = null): [Organizer!]!
+}
+
+input OrganizerArgs {
+  id: Int = null
+}
+
+type Mutation {
+  updateFollowEvent(followEventData: FollowEventInput!): Int!
+  addEvent(newEventData: NewEventInput!): Int!
+  removeEvent(id: Int!): Int!
+  updateUser(updateUserData: UpdateUserInput!): User!
+  login(loginData: LoginInput!): String!
+  addUser(newUserData: NewUserInput!): Int!
+  removeUser: Int!
+  updateFollowOrganizer(followOrganizerData: FollowOrganizerInput!): Int!
+  addOrganizer(newOrganizerData: NewOrganizerInput!): Int!
+  removeOrganizer(id: Int!): Int!
+}
+
+input FollowEventInput {
+  eventID: Int!
+  follow: Boolean!
+}
+
+input NewEventInput {
+  title: String!
+  description: String!
+  date: DateTime!
+  location: String!
+}
+
+input UpdateUserInput {
+  name: String
+  password: String
+  organizer: UpdateOrganizerInput
+}
+
+input UpdateOrganizerInput {
+  location: String
+  description: String
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input NewUserInput {
+  email: String!
+  name: String!
+  password: String!
+  organizer: NewOrganizerInput
+}
+
+input NewOrganizerInput {
+  location: String!
+  description: String!
+}
+
+input FollowOrganizerInput {
+  organizerID: Int!
+  follow: Boolean!
+}
