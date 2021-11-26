@@ -29,7 +29,7 @@ export class EventsResolver {
 
     @Query(returns => [Event])
     @UseGuards(new OptionalAuthGuard())
-    events(
+    async events(
         @Args() eventsArgs: EventsArgs,
         @Context('user') user: User
     ): Promise<Event[]> {
@@ -37,7 +37,7 @@ export class EventsResolver {
             throw new BadRequestException();
         }
 
-        return this.eventsService.findAll(eventsArgs, user?.id);
+        return await this.eventsService.findAll(eventsArgs, user?.id);
     }
 
     @Mutation(returns => Number)

@@ -6,6 +6,9 @@ export class OrganizerPartial {
     id: number;
 
     @Field()
+    name: string;
+
+    @Field()
     location: string;
 
     @Field()

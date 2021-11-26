@@ -92,7 +92,15 @@ export class UsersService {
     }
 
     async findOneById(id: number): Promise<User> {
-        return await this.userRepository.findOne(id);
+        var user = await this.userRepository.findOne(id);
+        
+        return {
+            ...user,
+            organizer: {
+                ...user.organizer,
+                name: user.name
+            }
+        };
     }
 
     async remove(id: number): Promise<void> {

@@ -42,7 +42,7 @@ export class OrganizersService {
             .leftJoinAndMapOne("organizer.userFollowing", "organizer.usersFollowing", "user", "user.id = :userID", { userID: userID })
             .loadRelationCountAndMap("organizer.followers", "organizer.usersFollowing")
             .where("organizer.id = :organizerID", { organizerID: id })
-            .select(["organizer.id", "organizer.location", "organizer.description", "user.id", "user.name", ])
+            .select(["organizer.id", "organizer.location", "organizer.description", "user.id", "user.name",])
             .getOne();
 
         if (!organizer) {
@@ -63,10 +63,14 @@ export class OrganizersService {
 
         if (organizersArgs.followingOnly && !!userID) {
             query = query
-                .innerJoinAndMapOne("organizer.userFollowing", "organizer.usersFollowing", "user", "user.id = :userID", { userID: userID })
+                .addSelect(qb => qb
+                    .from("organizer", "organizer")
+                    .innerJoinAndMapOne("organizer.userFollowing", "organizer.usersFollowing", "user", "user.id = :userID", { userID: userID }))
         } else {
             query = query
-                .leftJoinAndMapOne("organizer.userFollowing", "organizer.usersFollowing", "user", "user.id = :userID", { userID: userID })
+                .addSelect(qb => qb
+                    .from("organizer", "organizer")
+                    .leftJoinAndMapOne("organizer.userFollowing", "organizer.usersFollowing", "user", "user.id = :userID", { userID: userID }))
         }
 
         if (!!organizersArgs.searchTerm) {
@@ -75,15 +79,22 @@ export class OrganizersService {
         }
 
         if (!!organizersArgs.sortBy) {
-            query = query
-                .orderBy("organizer." + organizersArgs.sortBy);
+            switch (organizersArgs.sortBy) {
+                case "name":
+                    query = query
+                        .orderBy("user." + organizersArgs.sortBy);
+                    break
+                default:
+                    query = query
+                        .orderBy("organizer." + organizersArgs.sortBy);
+            }
         }
 
         query = query
             .loadRelationCountAndMap("organizer.followers", "organizer.usersFollowing")
             .skip(organizersArgs.skip)
             .take(organizersArgs.take)
-            .select(["organizer.id", "organizer.location", "organizer.description", "user.id", "user.name", ]);
+            .select(["organizer.id", "organizer.location", "organizer.description", "user.id", "user.name",]);
 
         const organizers: any[] = await query.getMany();
 

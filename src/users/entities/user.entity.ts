@@ -18,7 +18,7 @@ export class UserEntity {
     password: string;
 
     @Column('timestamp with time zone', { default: () => "(now() at time zone 'utc')" })
-    creationDate: Date = new Date();
+    creationDate: Date;
     
     @OneToOne(() => OrganizerEntity, organizer => organizer.user)
     organizer: OrganizerEntity;

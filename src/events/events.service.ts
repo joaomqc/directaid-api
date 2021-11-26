@@ -71,6 +71,9 @@ export class EventsService {
                 .innerJoinAndSelect("event.organizer", "organizer")
         }
 
+        query = query
+            .innerJoinAndSelect("organizer.user", "organizer.user");
+
         if (eventsArgs.followingOnly && !!userID) {
             query = query
                 .innerJoinAndMapOne("event.user", "event.usersFollowing", "user", "user.id = :userID", { userID: userID })
@@ -93,15 +96,18 @@ export class EventsService {
             .loadRelationCountAndMap("event.followers", "event.usersFollowing")
             .skip(eventsArgs.skip)
             .take(eventsArgs.take)
-            .select(["event.id", "event.title", "event.description", "event.date", "event.location", "organizer.id", "organizer.name", "user.id"]);
+            .select(["event.id", "event.title", "event.description", "event.date", "event.location", "organizer.id", "organizer.user.name", "user.id"]);
         
         const events: any[] = await query.getMany();
-
+        
         return events.map(event => ({
             ...event,
             following: !!event.user,
             followers: event.followers,
-            organizer: event.organizer
+            organizer: {
+                ...event.organizer,
+                name: event.organizer.user.name
+            }
         }));
     }
 
