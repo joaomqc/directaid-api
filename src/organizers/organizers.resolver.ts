@@ -73,7 +73,7 @@ export class OrganizersResolver {
     ): Promise<number> {
         const organizer = await this.organizersService.findOneById(id);
 
-        if (!organizer || organizer.user.id !== user.id) {
+        if (!organizer || organizer.id !== user.id) {
             throw new NotFoundException();
         }
 

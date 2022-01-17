@@ -42,18 +42,13 @@ export class OrganizersService {
             .leftJoinAndMapOne("organizer.userFollowing", "organizer.usersFollowing", "user", "user.id = :userID", { userID: userID })
             .loadRelationCountAndMap("organizer.followers", "organizer.usersFollowing")
             .where("organizer.id = :organizerID", { organizerID: id })
-            .select(["organizer.id", "organizer.location", "organizer.description", "user.id", "user.name",])
+            .select(["organizer.id", "organizer.location", "organizer.description", "user.id", "user.name", "user.creationDate"])
             .getOne();
 
         if (!organizer) {
             return null;
         }
-
-        return {
-            ...organizer,
-            following: !!organizer.userFollowing,
-            followers: organizer.followers
-        }
+        return this.toModel(organizer);
     }
 
     async findAll(organizersArgs: OrganizersArgs, userID?: number): Promise<Organizer[]> {
@@ -94,19 +89,25 @@ export class OrganizersService {
             .loadRelationCountAndMap("organizer.followers", "organizer.usersFollowing")
             .skip(organizersArgs.skip)
             .take(organizersArgs.take)
-            .select(["organizer.id", "organizer.location", "organizer.description", "user.id", "user.name",]);
+            .select(["organizer.id", "organizer.location", "organizer.description", "user.id", "user.name", "user.creationDate"]);
 
         const organizers: any[] = await query.getMany();
 
-        return organizers.map(organizer => ({
-            ...organizer,
-            following: !!organizer.userFollowing,
-            followers: organizer.followers,
-            organizer: organizer.organizer
-        }));
+        return organizers.map(this.toModel);
     }
 
     async remove(id: number): Promise<void> {
         await this.organizerRepository.delete(id);
+    }
+
+    private toModel(organizer: any): Organizer {
+        return {
+            ...organizer,
+            following: !!organizer.userFollowing,
+            followers: organizer.followers,
+            name: organizer.user.name,
+            userId: organizer.user.id,
+            creationDate: organizer.user.creationDate
+        }
     }
 }

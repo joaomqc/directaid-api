@@ -32,16 +32,15 @@ type User {
   organizer: OrganizerPartial
 }
 
-type UserPartial {
-  id: ID!
-  name: String!
-}
-
 type Organizer {
   id: ID!
   location: String!
   description: String!
-  user: UserPartial!
+  name: String!
+  userId: Int!
+  creationDate: DateTime!
+  followers: Int!
+  following: Boolean!
 }
 
 type Query {
