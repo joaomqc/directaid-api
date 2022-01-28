@@ -44,7 +44,7 @@ export class EventsService {
             .leftJoinAndMapOne("event.user", "event.usersFollowing", "user", "user.id = :userID", { userID: userID })
             .loadRelationCountAndMap("event.followers", "event.usersFollowing")
             .where("event.id = :eventID", { eventID: id })
-            .select(["event.id", "event.title", "event.description", "event.date", "event.location", "organizer.id", "organizer.name", "user.id"])
+            .select(["event.id", "event.title", "event.description", "event.date", "event.location", "organizer.id", "user.name", "user.id"])
             .getOne();
 
         if (!event) {

@@ -36,8 +36,8 @@ type Organizer {
   id: ID!
   location: String!
   description: String!
-  name: String!
   userId: Int!
+  name: String!
   creationDate: DateTime!
   followers: Int!
   following: Boolean!
